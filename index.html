@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nyaya AI — Indian Legal Advisor Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0d0a14;
+    --bg-panel: #18121f;
+    --line: #322a3d;
+    --text: #ece6f5;
+    --text-dim: #9a8fae;
+    --accent: #ffd700;
+    --accent-2: #c79bff;
+    --accent-glow: rgba(255,215,0,0.35);
+  }
+  *{ box-sizing: border-box; margin:0; padding:0; }
+  html{ scroll-behavior: smooth; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+  }
+  .mono{ font-family: 'JetBrains Mono', monospace; }
+  .wrap{ max-width: 1040px; margin: 0 auto; padding: 0 26px; }
+  a{ color: inherit; }
+
+  /* ---------- TITLE BAR ---------- */
+  .titlebar{
+    background: #07050b;
+    border-bottom: 1px solid var(--line);
+    padding: 9px 0;
+  }
+  .titlebar .wrap{ display:flex; align-items:center; gap: 8px; }
+  .titlebar .dots{ display:flex; gap: 6px; }
+  .titlebar .dots span{ width:10px; height:10px; border-radius:50%; }
+  .titlebar .dots span:nth-child(1){ background:#ff5f56; }
+  .titlebar .dots span:nth-child(2){ background:#ffbd2e; }
+  .titlebar .dots span:nth-child(3){ background:#27c93f; }
+  .titlebar .filename{ font-family:'JetBrains Mono'; font-size:12px; color: var(--text-dim); margin-left: 14px; }
+
+  /* ---------- NAV ---------- */
+  header{
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(13,10,20,0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav{ display:flex; justify-content: space-between; align-items:center; padding: 14px 0; }
+  .brand{ display:flex; align-items:center; gap:9px; font-weight:700; font-size:14px; font-family:'JetBrains Mono'; }
+  .brand .bracket{ color: var(--accent); }
+  .nav-links{ display:flex; gap: 4px; }
+  .nav-links a{
+    color: var(--text-dim); text-decoration:none; font-size:13px; font-family:'JetBrains Mono';
+    padding: 6px 12px; border-radius: 6px; transition: background .15s, color .15s;
+  }
+  .nav-links a:hover{ background: var(--bg-panel); color: var(--accent); }
+
+  /* ---------- HERO ---------- */
+  .hero{ padding: 80px 0 64px; }
+  .terminal{
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    max-width: 720px;
+    margin-bottom: 38px;
+    overflow:hidden;
+  }
+  .terminal-head{
+    display:flex; align-items:center; gap:8px;
+    padding: 10px 14px; border-bottom: 1px solid var(--line);
+    font-family:'JetBrains Mono'; font-size: 11px; color: var(--text-dim);
+  }
+  .terminal-head .led{ width:7px; height:7px; border-radius:50%; background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+  .terminal-body{ padding: 16px 18px; font-family:'JetBrains Mono'; font-size: 13px; }
+  .terminal-body .prompt{ color: var(--accent); }
+  .terminal-body .out{ color: var(--text-dim); margin-top: 6px; }
+
+  h1{
+    font-size: clamp(34px, 5vw, 54px); font-weight: 800;
+    line-height: 1.1; letter-spacing: -1px; max-width: 760px;
+  }
+  h1 .accent-text{ color: var(--accent); }
+  .lede{ margin-top: 22px; font-size: 17px; color: var(--text-dim); max-width: 580px; }
+  .cta-row{ display:flex; gap: 14px; margin-top: 34px; flex-wrap: wrap; }
+  .btn{
+    font-family:'JetBrains Mono'; font-size: 14px; font-weight:600; padding: 13px 22px;
+    border-radius: 8px; text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .btn-primary{
+    background: var(--accent); color: #1a1404; font-weight: 700;
+    box-shadow: 0 0 22px -4px var(--accent-glow);
+  }
+  .btn-primary:hover{ transform: translateY(-2px); box-shadow: 0 0 32px -2px var(--accent-glow); }
+  .btn-secondary{ border: 1px solid var(--line); background: var(--bg-panel); color: var(--text); }
+  .btn-secondary:hover{ border-color: var(--accent); transform: translateY(-2px); }
+
+  .stack-row{ margin-top: 38px; display:flex; gap:10px; flex-wrap: wrap; }
+  .tag{
+    font-family:'JetBrains Mono'; font-size: 12px; color: var(--accent-2);
+    border: 1px solid var(--line); background: var(--bg-panel); padding: 6px 12px; border-radius: 6px;
+  }
+
+  /* ---------- SECTION ---------- */
+  section{ padding: 70px 0; border-top: 1px solid var(--line); }
+  .section-label{
+    font-family:'JetBrains Mono'; font-size: 12px; color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .section-label::before{ content:"# "; color: var(--text-dim); }
+  h2{ font-size: clamp(24px, 3.2vw, 32px); font-weight: 700; max-width: 600px; }
+  .section-sub{ margin-top: 12px; color: var(--text-dim); font-size: 15px; max-width: 560px; }
+
+  /* ---------- ABOUT ---------- */
+  .about-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 44px; align-items:start; }
+  .about-grid p{ color: var(--text-dim); font-size: 15px; }
+  .about-grid p + p{ margin-top: 14px; }
+  .code-block{
+    background: var(--bg-panel); border: 1px solid var(--line); border-radius: 10px; padding: 20px;
+    font-family:'JetBrains Mono'; font-size: 12.5px; color: var(--text-dim); line-height: 1.8;
+  }
+  .code-block .k{ color: var(--accent-2); }
+  .code-block .v{ color: var(--accent); }
+
+  /* ---------- PIPELINE ---------- */
+  .pipeline{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .agent-card{
+    background: var(--bg-panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 20px 18px; transition: border-color .2s ease, transform .2s ease;
+  }
+  .agent-card:hover{ border-color: var(--accent); transform: translateY(-3px); }
+  .agent-card .top-row{ display:flex; justify-content: space-between; align-items:center; margin-bottom: 14px; }
+  .agent-card .num{ font-family:'JetBrains Mono'; font-size: 18px; font-weight:700; color: var(--accent); }
+  .agent-card .tag-sm{
+    font-family:'JetBrains Mono'; font-size: 9px; color: var(--text-dim);
+    border: 1px solid var(--line); padding: 2px 7px; border-radius: 4px;
+  }
+  .agent-card h3{ font-size: 14.5px; font-weight: 700; margin-bottom: 8px; }
+  .agent-card p{ font-size: 12.5px; color: var(--text-dim); line-height: 1.55; }
+
+  /* ---------- AREAS OF LAW ---------- */
+  .law-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .law-card{
+    background: var(--bg-panel); border: 1px solid var(--line); border-radius: 10px; padding: 24px;
+  }
+  .law-card h3{ font-size: 15.5px; font-weight: 700; margin-bottom: 8px; color: var(--accent); }
+  .law-card p{ font-size: 13.5px; color: var(--text-dim); }
+  .law-card code{
+    display:block; margin-top: 14px; font-family:'JetBrains Mono'; font-size: 12px;
+    color: var(--accent-2); background: var(--bg); padding: 10px 12px; border-radius: 6px;
+    border: 1px solid var(--line);
+  }
+
+  /* ---------- FEATURES ---------- */
+  .feature-grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .feature{
+    background: var(--bg-panel); border: 1px solid var(--line); border-radius: 10px; padding: 22px;
+    transition: border-color .2s ease;
+  }
+  .feature:hover{ border-color: var(--accent); }
+  .feature h3{ font-size: 14.5px; font-weight: 700; margin-bottom: 8px; font-family:'JetBrains Mono'; }
+  .feature h3::before{ content:"▸ "; color: var(--accent); }
+  .feature p{ font-size: 13px; color: var(--text-dim); }
+
+  /* ---------- DISCLAIMER ---------- */
+  .disclaimer{
+    background: var(--bg-panel); border: 1px solid var(--accent); border-radius: 10px;
+    padding: 22px 24px; font-size: 13.5px; color: var(--text-dim);
+  }
+  .disclaimer strong{ color: var(--accent); }
+
+  /* ---------- LINKS ---------- */
+  .links-grid{ display:flex; gap: 14px; flex-wrap: wrap; }
+  .link-card{
+    flex:1; min-width: 250px; background: var(--bg-panel); border: 1px solid var(--line);
+    border-radius: 10px; padding: 24px; text-decoration:none; color: var(--text);
+    transition: border-color .2s ease, transform .2s ease;
+  }
+  .link-card:hover{ border-color: var(--accent); transform: translateY(-2px); }
+  .link-card .label{ font-family:'JetBrains Mono'; font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+  .link-card .title{ font-size: 16px; font-weight: 700; margin-top: 8px; color: var(--accent); }
+  .link-card .desc{ font-size: 13px; color: var(--text-dim); margin-top: 6px; }
+
+  footer{ border-top: 1px solid var(--line); padding: 26px 0; text-align:center; }
+  footer p{ font-family:'JetBrains Mono'; font-size: 11.5px; color: var(--text-dim); }
+  footer a{ color: var(--accent); text-decoration:none; }
+
+  @media (max-width: 800px){
+    .about-grid{ grid-template-columns: 1fr; }
+    .pipeline{ grid-template-columns: 1fr 1fr; }
+    .feature-grid{ grid-template-columns: 1fr; }
+    .law-grid{ grid-template-columns: 1fr; }
+    .nav-links{ display:none; }
+  }
+  @media (max-width: 480px){
+    .pipeline{ grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="titlebar">
+  <div class="wrap">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <div class="filename">nyaya_ai.py</div>
+  </div>
+</div>
+
+<header>
+  <div class="wrap nav">
+    <div class="brand"><span class="bracket">&lt;</span>Nyaya AI<span class="bracket">/&gt;</span></div>
+    <div class="nav-links">
+      <a href="#about">about</a>
+      <a href="#pipeline">how it works</a>
+      <a href="#areas">areas of law</a>
+      <a href="#features">features</a>
+      <a href="#links">explore</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+
+    <h1>Ask a legal question. Get a <span class="accent-text">plain-English</span> answer, grounded in Indian law.</h1>
+    <p class="lede">Nyaya AI is a Streamlit-based legal advisor assistant that explains the Indian Constitution, IPC/BNS, consumer rights, cyber law, and everyday legal procedures in simple, beginner-friendly language — powered by Google's Gemini model.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://huggingface.co/spaces/prudhvi28x/AI-Powered-Legal-Awareness-Assistant" target="_blank">▶ launch_demo</a>
+      <a class="btn btn-secondary" href="https://github.com/prudhvikakkunuri/AI-Legal-Assistant" target="_blank">view_source</a>
+    </div>
+    <div class="stack-row">
+      <span class="tag">LangChain</span>
+      <span class="tag">Gemini 2.5 Flash</span>
+      <span class="tag">Streamlit</span>
+      <span class="tag">Python</span>
+      <span class="tag">dotenv</span>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="section-label">about</div>
+    <h2>Legal awareness, not legal jargon</h2>
+    <div class="about-grid" style="margin-top: 24px;">
+      <div>
+        <p>Indian law is vast and intimidating — the Constitution, IPC, the newer BNS, CrPC/BNSS, consumer protection, cyber law, and more. Most people don't know their rights simply because the language is inaccessible.</p>
+        <p>Nyaya AI sits between the user and that complexity. A single, carefully engineered prompt instructs the model to act as an Indian legal advisor, answer in simple English, cite relevant sections or articles where useful, and tell the user clearly whether something is legal or illegal — while always recommending a licensed advocate for serious matters.</p>
+      </div>
+      <div class="code-block">
+        <div><span class="k">model</span> = <span class="v">"gemini-2.5-flash"</span></div>
+        <div><span class="k">temperature</span> = <span class="v">0.5</span></div>
+        <div><span class="k">framework</span> = <span class="v">"LangChain"</span></div>
+        <div><span class="k">prompt_template</span> = <span class="v">ChatPromptTemplate</span></div>
+        <div><span class="k">ui</span> = <span class="v">"Streamlit"</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pipeline">
+  <div class="wrap">
+    <div class="section-label">how it works</div>
+    <h2>From question to grounded legal answer</h2>
+    <p class="section-sub">A simple but carefully constrained chain turns a raw question into a structured, responsible answer.</p>
+    <div class="pipeline" style="margin-top: 30px;">
+      <div class="agent-card">
+        <div class="top-row"><div class="num">01</div><div class="tag-sm">input</div></div>
+        <h3>User question</h3>
+        <p>The user types a legal question in plain language through a simple Streamlit text input.</p>
+      </div>
+      <div class="agent-card">
+        <div class="top-row"><div class="num">02</div><div class="tag-sm">prompt</div></div>
+        <h3>Legal system prompt</h3>
+        <p>A detailed ChatPromptTemplate frames the model as an expert Indian legal advisor with strict response rules.</p>
+      </div>
+      <div class="agent-card">
+        <div class="top-row"><div class="num">03</div><div class="tag-sm">generate</div></div>
+        <h3>Gemini generation</h3>
+        <p>The prompt is piped into Google's Gemini 2.5 Flash model via LangChain to generate the response.</p>
+      </div>
+      <div class="agent-card">
+        <div class="top-row"><div class="num">04</div><div class="tag-sm">display</div></div>
+        <h3>Chat-style answer</h3>
+        <p>The answer is rendered in a styled chat bubble, with headings and bullet points for easy reading.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="areas">
+  <div class="wrap">
+    <div class="section-label">what it covers</div>
+    <h2>Built-in legal knowledge areas</h2>
+    <p class="section-sub">The system prompt anchors every answer to specific bodies of Indian law instead of vague generalities.</p>
+    <div class="law-grid" style="margin-top: 30px;">
+      <div class="law-card">
+        <h3>Constitution &amp; rights</h3>
+        <p>Explains fundamental rights, constitutional articles, and what they actually mean for an ordinary citizen.</p>
+        <code>"What is Article 21 of the Indian Constitution?"</code>
+      </div>
+      <div class="law-card">
+        <h3>Criminal law: IPC, BNS, CrPC/BNSS</h3>
+        <p>Covers both the older Indian Penal Code and the newer Bharatiya Nyaya Sanhita, plus arrest and FIR procedure.</p>
+        <code>"Can police arrest without a warrant?"</code>
+      </div>
+      <div class="law-card">
+        <h3>Cyber law &amp; consumer rights</h3>
+        <p>Guides users through cyber fraud, online blackmail, and the consumer complaint process step by step.</p>
+        <code>"What should I do after a cyber crime?"</code>
+      </div>
+      <div class="law-card">
+        <h3>Labour, property &amp; family law</h3>
+        <p>Answers everyday questions about employment termination, property disputes, and family legal matters.</p>
+        <code>"Can my employer fire me without notice?"</code>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="section-label">capabilities</div>
+    <h2>What it does</h2>
+    <div class="feature-grid" style="margin-top: 30px;">
+      <div class="feature">
+        <h3>Plain-English explanations</h3>
+        <p>Translates dense legal terminology into beginner-friendly language with clear headings and bullet points.</p>
+      </div>
+      <div class="feature">
+        <h3>Section &amp; article references</h3>
+        <p>Cites relevant IPC/BNS sections or constitutional articles whenever they're useful to the answer.</p>
+      </div>
+      <div class="feature">
+        <h3>Legal vs. illegal verdicts</h3>
+        <p>Directly states whether a described action is legal or illegal, along with likely consequences.</p>
+      </div>
+      <div class="feature">
+        <h3>Guided sidebar &amp; examples</h3>
+        <p>A sidebar lists popular query categories and an expander offers ready-made example questions to try.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="disclaimer" style="border-bottom:none;">
+  <div class="wrap">
+    <div class="section-label">responsible by design</div>
+    <h2>Guardrails built into the prompt</h2>
+    <p class="section-sub" style="margin-bottom: 26px;">The system prompt explicitly refuses to assist with illegal activity and always points serious cases toward real legal help.</p>
+    <div class="disclaimer">
+      <strong>⚠️ Not a substitute for a licensed advocate.</strong> Nyaya AI provides legal information and general awareness only. For serious situations, it explicitly advises consulting a licensed lawyer or approaching the police or legal authorities — and it refuses any request asking how to commit crimes, hack, scam, or evade law enforcement.
+    </div>
+  </div>
+</section>
+
+<section id="links" style="border-bottom:none;">
+  <div class="wrap">
+    <div class="section-label">explore</div>
+    <h2>Try it or read the code</h2>
+    <div class="links-grid" style="margin-top: 26px;">
+      <a class="link-card" href="https://huggingface.co/spaces/prudhvi28x/AI-Powered-Legal-Awareness-Assistant" target="_blank">
+        <div class="label">live_demo</div>
+        <div class="title">Hugging Face Spaces →</div>
+        <div class="desc">Ask a legal question and get a grounded answer directly in your browser.</div>
+      </a>
+      <a class="link-card" href="https://github.com/prudhvikakkunuri/AI-Legal-Assistant" target="_blank">
+        <div class="label">source_code</div>
+        <div class="title">GitHub Repository →</div>
+        <div class="desc">See the full prompt design, Gemini integration, and Streamlit UI.</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Nyaya AI · Indian Legal Awareness Assistant · Built with Streamlit, LangChain &amp; Gemini</p>
+  </div>
+</footer>
+
+</body>
+</html>
