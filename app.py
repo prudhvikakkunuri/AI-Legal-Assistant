@@ -1,14 +1,18 @@
 from dotenv import load_dotenv
 import streamlit as st
-from langchain_google_genai import GoogleGenerativeAI
+from langchain_mistralai import ChatMistralAI
 from langchain_core.prompts import ChatPromptTemplate
 
 # ---------------- LOAD ENV ---------------- #
+import os
+from dotenv import load_dotenv
+
 load_dotenv()
 
+MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 # ---------------- PAGE CONFIG ---------------- #
 st.set_page_config(
-    page_title="Indian Legal AI Advisor",
+    page_title="AI Indian Legal Advisor",
     page_icon="⚖️",
     layout="centered"
 )
@@ -268,13 +272,17 @@ Question:
 prompt = ChatPromptTemplate.from_template(template)
 
 # ---------------- MODEL ---------------- #
-model = GoogleGenerativeAI(
-    model="gemini-2.5-flash",
+model = ChatMistralAI(
+    model="mistral-small-2506",
     temperature=0.5
 )
 
 # ---------------- CHAIN ---------------- #
-chain = prompt | model
+from langchain_core.output_parsers import StrOutputParser
+
+parser = StrOutputParser()
+
+chain = prompt | model | parser
 
 # ---------------- INPUT ---------------- #
 user_input = st.text_input(
@@ -300,7 +308,7 @@ if st.button("Get Legal Advice"):
             })
 
         with st.chat_message("assistant"):
-            st.markdown(response)
+            st.markdown(str(response.content))
 
 # ---------------- FOOTER ---------------- #
 st.markdown(
