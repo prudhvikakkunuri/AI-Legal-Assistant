@@ -308,7 +308,7 @@ if st.button("Get Legal Advice"):
             })
 
         with st.chat_message("assistant"):
-            st.markdown(str(response.content))
+            st.markdown(str(response))
 
 # ---------------- FOOTER ---------------- #
 st.markdown(
