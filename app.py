@@ -9,8 +9,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
-# ---------------- PAGE CONFIG ---------------- #
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+if not GROQ_API_KEY:
+    raise ValueError(
+        "GROQ_API_KEY not found. Please add it to your .env file."
+    )# ---------------- PAGE CONFIG ---------------- #
 st.set_page_config(
     page_title="AI Indian Legal Advisor",
     page_icon="⚖️",
@@ -272,9 +275,10 @@ Question:
 prompt = ChatPromptTemplate.from_template(template)
 
 # ---------------- MODEL ---------------- #
-model = ChatMistralAI(
-    model="mistral-small-2506",
-    temperature=0.5
+model = ChatGroq(
+    model="openai/gpt-oss-120b",
+    temperature=0.5,
+    api_key=GROQ_API_KEY
 )
 
 # ---------------- CHAIN ---------------- #
