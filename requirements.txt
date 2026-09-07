@@ -1,5 +1,5 @@
 streamlit
 langchain
-langchain-Groq
+langchain-groq
 mistralai
 dotenv
