@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 import streamlit as st
-from langchain_mistralai import ChatMistralAI
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 
 # ---------------- LOAD ENV ---------------- #
